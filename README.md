@@ -3,6 +3,7 @@
 Automatically substitute path abbreviations in fish interactive shell.
 Implemented using pure fish.
 
+
 ```
 Usage: quickpath [OPTIONS]
 
@@ -23,12 +24,11 @@ Examples:
 Install with [fisher](https://github.com/jorgebucaran/fisher):
 
 ```fish
-fisher install abhabongse/quickpath.fish
+fisher install abhabongse/quickpath.fish  # assumes github.com by fisher command
 ```
 
-> [!NOTE]
-> I'm looking into moving this into [Codeberg](https://codeberg.org/)
-> or self-hosted git forge once `fisher` supports arbitrary plugin source.
+Alternatively, you may copy respective files into `$FISH_CONFIG_DIR` directory
+such as `~/.config/fish/` in the default cases.
 
 
 ## Usage Examples
@@ -59,18 +59,27 @@ quickpath --unset df
 ## Configuration
 
 Command `quickpath --set` affects only the running interactive session
-and won't persist across multiple sessions.
+and won’t persist across multiple sessions.
 It is recommended to configure the list of the list of quickpaths
 inside the file located at `$FISH_CONFIG_DIR/conf.d/quickpath.fish`.
+Feel free to rename this configuration file as you see fit,
+as fish shell scripts `$FISH_CONFIG_DIR/conf.d/` will be loaded by default.
 
 
 ## Help, Support, and Contribute
 
-If you are a user of this package, I would like to hear from you!
-[Create a discussion thread][github:discussion]
-or send me a direct message if you have feedback or suggestions.
+The project is maintained at [Codeberg][codeberg:repo]
+and routinely mirror-pushed to [GitHub][github:repo].
 
-### Transparency Disclaimer
+If you are a user of this package, or if you have feedback or suggestions,
+I would like to hear from you!
+
+- [Create an issue on Codeberg][codeberg:issue]
+- [Create a discussion on GitHub][github:discussion]
+- Or send me a direct message
+
+
+## Transparency Disclaimer
 
 Chat-based Large Language Models are consulted while creating this plugin,
 though I have vetted every single line of code before publishing this code.
@@ -79,5 +88,12 @@ though I have vetted every single line of code before publishing this code.
 ## License
 
 [Apache-2.0](./LICENSE) © Abhabongse Janthong
+
+
+[codeberg:repo]: https://codeberg.org/abhabongse/quickpath.fish
+
+[codeberg:issue]: https://codeberg.org/abhabongse/quickpath.fish/issues
+
+[github:repo]: https://github.com/abhabongse/quickpath.fish
 
 [github:discussion]: https://github.com/abhabongse/quickpath.fish/discussions
