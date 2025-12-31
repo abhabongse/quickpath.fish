@@ -23,8 +23,12 @@ Examples:
 Install with [fisher](https://github.com/jorgebucaran/fisher):
 
 ```fish
-fisher install github.com/abhabongse/quickpath.fish
+fisher install abhabongse/quickpath.fish
 ```
+
+> [!NOTE]
+> I'm looking into moving this into [Codeberg](https://codeberg.org/)
+> or self-hosted git forge once `fisher` supports arbitrary plugin source.
 
 
 ## Usage Examples
