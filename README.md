@@ -3,21 +3,8 @@
 Automatically substitute path abbreviations in fish interactive shell.
 Implemented using pure fish.
 
+[![asciicast](./asciinema-demo.gif)](https://asciinema.org/a/h0n5SxKKk84jwF0F)
 
-```
-Usage: quickpath [OPTIONS]
-
-Options:
-  -l, --list              List all quickpath mappings
-  --set <key> <path>      Create or update a quickpath mapping
-  --unset <key>           Remove a quickpath mapping
-
-Examples:
-  quickpath --set c \~/.config/
-  quickpath --set d \~/Documents/
-  quickpath --list
-  quickpath --unset c
-```
 
 ## Installation
 
@@ -53,6 +40,23 @@ quickpath --list
 
 # Remove some mappings
 quickpath --unset df
+```
+
+Full usage text:
+
+```
+Usage: quickpath [OPTIONS]
+
+Options:
+  -l, --list              List all quickpath mappings
+  --set <key> <path>      Create or update a quickpath mapping
+  --unset <key>           Remove a quickpath mapping
+
+Examples:
+  quickpath --set c \~/.config/
+  quickpath --set d \~/Documents/
+  quickpath --list
+  quickpath --unset c
 ```
 
 
