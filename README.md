@@ -47,26 +47,34 @@ such as `~/.config/fish/` in the default cases.
 ## Usage Examples
 
 ```fish
-# Set a quickpath substitution mapping for c/ into ~/.config/
-quickpath --set c \~/.config/
+# Set a basic quickpath mapping
+# (single-quote the value so fish passes it literally; the ~ is stored as-is
+#  and tilde-expands at execution time)
+quickpath --set c '~/.config/'
 
 # When a user types in the following (without needing to hit tab or return) ...
 cd c/
 # ... it immediately substitutes the prompt into the following
 cd ~/.config/
 
-# Add more quickpath mapping
-# - Quickpath key may contain multiple characters
-# - Subsituted path may contain spaces (do not forget to escape)
-# - Path with spaces with be quoted when substituted
-quickpath --set mv \~/Music/Music\ Videos/
+# Path containing spaces (escape each space as \ inside single quotes)
+quickpath --set d '~/My\ Documents/'
+
+# Path where $VAR should expand at execution time
+quickpath --set proj '$PROJECT/src/'
+
+# Path where the dollar sign should be literal
+quickpath --set prices '~/\$5_items/'
 
 # List all configured mappings
 quickpath --list
 
-# Remove some mappings
-quickpath --unset df
+# Remove a mapping
+quickpath --unset c
 ```
+
+See [`quickpath.conf.fish`](./quickpath.conf.fish) for the full set of quoting
+conventions (backslashes, single quotes inside the value, etc.).
 
 Full usage text:
 
@@ -77,10 +85,11 @@ Options:
   -l, --list              List all quickpath mappings
   --set <key> <path>      Create or update a quickpath mapping
   --unset <key>           Remove a quickpath mapping
+  --help                  Show this help message
 
 Examples:
-  quickpath --set c \~/.config/
-  quickpath --set d \~/Documents/
+  quickpath --set c '~/.config/'
+  quickpath --set d '~/Documents/'
   quickpath --list
   quickpath --unset c
 ```
