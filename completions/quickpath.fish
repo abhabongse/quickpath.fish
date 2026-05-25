@@ -1,45 +1,40 @@
 # Disable file completion until it is necessary
 complete --command quickpath --no-files
 
-# --list completion
-complete --command quickpath --short-option l --long-option list --description "List all quickpaths"
-
-# --set completion (no arguments yet)
-complete --command quickpath --long-option set --description "Set key mapping to path" --condition "not __quickpath_has_flag_set"
+# Mode flags: only offered when no mode has been chosen yet
+complete --command quickpath --short-option l --long-option list --description "List all quickpaths" --condition "not __quickpath_seen_mode"
+complete --command quickpath --long-option set --description "Set key mapping to path" --condition "not __quickpath_seen_mode"
+complete --command quickpath --long-option unset --description "Unset key mapping" --condition "not __quickpath_seen_mode"
+complete --command quickpath --long-option help --description "Show help" --condition "not __quickpath_seen_mode"
 
 # --set: autocomplete existing keys for the key argument
-complete --command quickpath --condition "__quickpath_needs_set_key" --arguments "(__quickpath_get_keys_with_descriptions set)"
+complete --command quickpath --condition __quickpath_needs_set_key --arguments "(__quickpath_get_keys_with_descriptions set)"
 
 # --set: enable file completion for the path argument
-complete --command quickpath --condition "__quickpath_needs_set_path" --force-files
-
-# --unset completion (no arguments yet)
-complete --command quickpath --long-option unset --description "Unset key mapping" --condition "not __quickpath_has_flag_unset"
+complete --command quickpath --condition __quickpath_needs_set_path --force-files
 
 # --unset: autocomplete existing keys
-complete --command quickpath --condition "__quickpath_needs_unset_key" --arguments "(__quickpath_get_keys_with_descriptions unset)"
+complete --command quickpath --condition __quickpath_needs_unset_key --arguments "(__quickpath_get_keys_with_descriptions unset)"
 
-# Helper: check if --set flag exists
-function __quickpath_has_flag_set
-    string match -q -- "--set" (commandline -opc)
-end
-
-# Helper: check if --unset flag exists
-function __quickpath_has_flag_unset
-    string match -q -- "--unset" (commandline -opc)
+# Helper: true when any mode flag is already present on the command line
+function __quickpath_seen_mode
+    set -l tokens (commandline -xpc)
+    contains -- --list $tokens
+    or contains -- -l $tokens
+    or contains -- --set $tokens
+    or contains -- --unset $tokens
+    or contains -- --help $tokens
 end
 
 # Helper: count arguments after a specific flag
 function __quickpath_count_args_after_flag
     set -l flag $argv[1]
-    set -l tokens (commandline -opc)
+    set -l tokens (commandline -xpc)
 
-    # Look for the flag
     if not contains -- $flag $tokens
         return 1
     end
 
-    # Count arguments after the flag
     set -l after_flag 0
     set -l found_flag 0
     for token in $tokens
@@ -74,17 +69,17 @@ end
 
 # Helper: get all existing keys with descriptions showing mapped paths
 function __quickpath_get_keys_with_descriptions
-    set -l mode $argv[1]  # 'set' or 'unset'
+    set -l mode $argv[1]
 
     for item in $__quickpath_maps
-        set -l parts (string split --max 1 "/" $item)
+        set -l parts (string split --max 1 -- "/" $item)
         if test -n "$parts[1]"
             set -l key $parts[1]
             set -l path $parts[2]
 
-            if test "$mode" = "set"
+            if test "$mode" = set
                 printf "%s\tExisting key: %s\n" $key $path
-            else if test "$mode" = "unset"
+            else if test "$mode" = unset
                 printf "%s\tKey to remove: %s\n" $key $path
             end
         end

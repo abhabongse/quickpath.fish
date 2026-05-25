@@ -1,6 +1,21 @@
 function quickpath --description "Manages quickpath bindings in fish shell"
-    argparse l/list set unset help -- $argv
+    argparse --stop-nonopt l/list set unset help -- $argv
     or return 1
+
+    set -l _n 0
+    set -q _flag_list; and set _n (math $_n + 1)
+    set -q _flag_set; and set _n (math $_n + 1)
+    set -q _flag_unset; and set _n (math $_n + 1)
+    set -q _flag_help; and set _n (math $_n + 1)
+    if test $_n -gt 1
+        __quickpath_usage "Error: --list, --set, --unset, and --help are mutually exclusive"
+        return 1
+    end
+
+    if set -q _flag_help
+        __quickpath_usage
+        return 0
+    end
 
     # --list/-l all quickpaths
     if set -q _flag_list
@@ -49,10 +64,11 @@ function __quickpath_usage --argument-names error_msg
     echo >&2 "  -l, --list              List all quickpath mappings"
     echo >&2 "  --set <key> <path>      Create or update a quickpath mapping"
     echo >&2 "  --unset <key>           Remove a quickpath mapping"
+    echo >&2 "  --help                  Show this help message"
     echo >&2
     echo >&2 "Examples:"
-    echo >&2 "  quickpath --set c \\~/.config/"
-    echo >&2 "  quickpath --set d \\~/Documents/"
+    echo >&2 "  quickpath --set c '~/.config/'"
+    echo >&2 "  quickpath --set d '~/Documents/'"
     echo >&2 "  quickpath --list"
     echo >&2 "  quickpath --unset c"
     echo >&2
@@ -64,13 +80,28 @@ function __quickpath_set --argument-names key path
         return 1
     end
 
+    if string match -qr -- / $key
+        echo >&2 "Error: key cannot contain '/'"
+        return 1
+    end
+
+    if string match -qr -- '\s' $key
+        echo >&2 "Error: key cannot contain whitespace"
+        return 1
+    end
+
+    if string match -q -- '-*' $key
+        echo >&2 "Error: key cannot start with '-'"
+        return 1
+    end
+
     if test -z "$path"
         echo >&2 "Error: path cannot be empty"
         return 1
     end
 
     set -l new_list (__quickpath_filter_key $key)
-    set -l entry (string join "/" $key $path)
+    set -l entry (string join -- "/" $key $path)
     set -g __quickpath_maps $new_list $entry
 end
 
@@ -86,7 +117,7 @@ end
 
 function __quickpath_filter_key --argument-names key
     for item in $__quickpath_maps
-        set -l parts (string split --max 1 "/" $item)
+        set -l parts (string split --max 1 -- "/" $item)
         if test "$parts[1]" != "$key"
             echo $item
         end

@@ -1,24 +1,15 @@
 # Not applied in non-interactive sessions
-if not status --is-interactive
-    return
-end
+status is-interactive
+or return
 
-# Binds / character to the command expansion function
-if test "$fish_key_bindings" = fish_vi_key_bindings
-    bind -Minsert / __quickpath_expand_slash
-else
-    bind / __quickpath_expand_slash
+# Defer the initial bind until after config.fish has run, so vi mode set there
+# is visible. conf.d loads before config.fish, so reading $fish_key_bindings now
+# would always see the default. The hook erases itself after firing.
+function __quickpath_install --on-event fish_prompt
+    functions --erase __quickpath_install
+    __quickpath_bind
+    # Re-apply the binding whenever the user switches binding modes at runtime.
+    function __quickpath_rebind --on-variable fish_key_bindings
+        __quickpath_bind
+    end
 end
-
-# =============================================================================
-# Configuration: Set quickpath abbreviation mapping for your interative shell
-#
-# Note: You may need to escape some characters (such as tilde character: ~)
-# and also add trailing slash to keep it after substitution.
-#
-# Example: Config on the first line will automatically substitute 'c/' into
-# '~/.config/' right exactly when / character is hit on the keyboard
-# =============================================================================
-#quickpath --set c \~/.config/
-#quickpath --set ls \~/.local/share/
-#quickpath --set d ~/Documents/

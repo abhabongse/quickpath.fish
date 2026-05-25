@@ -6,17 +6,7 @@ function __quickpath_expand_slash
         set -l parts (string split --max 1 "/" $item)
 
         if test "$parts[1]" = "$token"
-            set -l path $parts[2]
-
-            if string match -q "* *" -- $path
-                # Special case: enclose the string with quotation marks
-                # if the substituted string contains a space character
-                commandline -t "\"$path\""
-                commandline -f backward-char
-            else
-                commandline -t "$path"
-            end
-
+            commandline -t -- $parts[2]
             set matched 1
             break
         end
